@@ -11,27 +11,29 @@ OUT_DIR = ./ebin
 TEST_DIR = ./test
 TEST_OUT_DIR = ./.eunit
 SCRIPT_PATH=$(DEPS)/lfe/bin:.:./bin:"$(PATH)":/usr/local/bin
-ifeq ($(shell which lfetool),)
-LFETOOL=$(BIN_DIR)/lfetool
-else
-LFETOOL=lfetool
-endif
-ERL_LIBS=$(shell pwd):$(shell $(LFETOOL) info erllibs)
+LFETOOL = /usr/local/bin/lfetool
+REBAR = /usr/local/bin/rebar
+ERL_LIBS = $(shell pwd):$(shell $(LFETOOL) info erllibs)
 OS := $(shell uname -s)
 ifeq ($(OS),Linux)
-	HOST=$(HOSTNAME)
+	HOST = $(HOSTNAME)
+	SUDO = sudo
 endif
 ifeq ($(OS),Darwin)
 	HOST = $(shell scutil --get ComputerName)
+	SUDO = ""
 endif
 
-$(BIN_DIR):
-	mkdir -p $(BIN_DIR)
-
-get-lfetool: $(BIN_DIR)
+$(LFETOOL):
 	curl -L -o ./lfetool https://raw.github.com/lfe/lfetool/stable/lfetool && \
 	chmod 755 ./lfetool && \
-	mv ./lfetool $(BIN_DIR)
+	./lfetool -x
+	mv ./lfetool $(LFETOOL)
+
+$(REBAR):
+	curl -L -o ./rebar https://github.com/rebar/rebar/wiki/rebar && \
+	chmod 755 ./rebar && \
+	mv ./rebar $(LFETOOL)
 
 get-version:
 	@PATH=$(SCRIPT_PATH) $(LFETOOL) info version
@@ -51,7 +53,7 @@ clean-ebin:
 clean-eunit:
 	-@PATH=$(SCRIPT_PATH) $(LFETOOL) tests clean
 
-compile: get-deps clean-ebin
+compile: setup get-deps clean-ebin 
 	@echo "Compiling project code and dependencies ..."
 	@which rebar.cmd >/dev/null 2>&1 && \
 	PATH=$(SCRIPT_PATH) ERL_LIBS=$(ERL_LIBS) rebar.cmd compile || \

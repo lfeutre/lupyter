@@ -20,6 +20,14 @@
 
 Add content to me here!
 
+## Dependencies
+
+You will need to have the following installed:
+
+* Erlang
+* Python
+* ``pip``
+* ZeroMQ
 
 ## Installation
 
