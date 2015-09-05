@@ -7,6 +7,7 @@
   (start 'normal '()))
 
 (defun start (type args)
+  (logjam:start)
   (let ((result (lupyter-sup:start_link)))
     (case result
       (`#(ok ,pid)
