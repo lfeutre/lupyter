@@ -18,7 +18,7 @@ $(LUPY_JSON):
 	sed 's|HOME|'${HOME}'|' resources/kernel.json > $(LUPY_JSON)
 
 venv:
-	pip install virtualenv
+	-sudo pip install virtualenv
 
 $(LUPY_VENV): venv
 	virtualenv $(LUPY_VENV)
