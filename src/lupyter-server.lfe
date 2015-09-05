@@ -20,7 +20,7 @@
 
 (defun start_link ()
   (gen_server:start_link
-     `#(local ,(server-name)) ,(MODULE) () ()))
+     `#(local ,(server-name)) (MODULE) '() '()))
 
 (defun test-call (message)
   (gen_server:call

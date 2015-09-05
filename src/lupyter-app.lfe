@@ -1,7 +1,10 @@
 (defmodule lupyter-app
   (behaviour application)
-  (export (start 2)
+  (export (start 0) (start 2)
           (stop 1)))
+
+(defun start ()
+  (start 'normal '()))
 
 (defun start (type args)
   (let ((result (: lupyter-sup start_link)))
