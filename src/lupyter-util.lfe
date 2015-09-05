@@ -8,7 +8,9 @@
 
 (defun get-versions ()
   (++ (lutil:get-versions)
-      `(#(lupyter ,(get-version)))))
+      `(#(ljson ,(lutil:get-app-version 'ljson))
+        #(erlzmq2 ,(lutil:get-app-version 'erlzmq))
+        #(lupyter ,(get-version)))))
 
 (defun hmac (key header parent metadata content)
   (hmac key (++ header parent metadata content)))

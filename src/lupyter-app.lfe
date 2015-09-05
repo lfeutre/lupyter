@@ -7,12 +7,12 @@
   (start 'normal '()))
 
 (defun start (type args)
-  (let ((result (: lupyter-sup start_link)))
+  (let ((result (lupyter-sup:start_link)))
     (case result
-      ((tuple 'ok pid)
+      (`#(ok ,pid)
         result)
       (_
-        (tuple 'error result)))))
+        `#(error ,result)))))
 
 (defun stop (state)
   'ok)

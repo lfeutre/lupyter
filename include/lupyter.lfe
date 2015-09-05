@@ -1,0 +1,2 @@
+(defrecord state
+  (data #()))
