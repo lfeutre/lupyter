@@ -1,4 +1,4 @@
-# lupyter [![Build Status][travis-badge]][travis]
+# lupyter
 
 [travis]: https://travis-ci.org/oubiwann/lupyter
 [travis-badge]: https://travis-ci.org/oubiwann/lupyter.png?branch=master
