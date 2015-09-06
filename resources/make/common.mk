@@ -69,6 +69,11 @@ compile-no-deps: clean-ebin
 compile-tests: clean-eunit
 	@PATH=$(SCRIPT_PATH) ERL_LIBS=$(ERL_LIBS) $(LFETOOL) tests build
 
+repl-quick:
+	@which clear >/dev/null 2>&1 && clear || printf "\033c"
+	@echo "Starting an LFE REPL ..."
+	@PATH=$(SCRIPT_PATH) ERL_LIBS=$(ERL_LIBS) $(LFETOOL) repl lfe +pc unicode
+
 repl: compile
 	@which clear >/dev/null 2>&1 && clear || printf "\033c"
 	@echo "Starting an LFE REPL ..."
