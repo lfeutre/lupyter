@@ -23,3 +23,9 @@
   `(#(protocol_version ,(kernel-version))
     #(language #"lfe")
     #(language_version ,(lfe-version))))
+
+(defun now ()
+  (format-time (os:timestamp)))
+
+(defun format-time (timestamp)
+  (iso8601:format timestamp))
