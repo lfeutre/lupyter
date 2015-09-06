@@ -29,3 +29,13 @@
   (let ((signature (lupyter-hmac:new "header" "parent" "metadata" "content"))
         (checker (lupyter-msg:checker)))
     (is (funcall checker signature '("header" "parent" "metadata" "content")))))
+
+(deftest encode
+  (let ((encoded (lupyter-msg:encode "header" "parent" "metadata" "content")))
+    (is-equal #"\"metadata\"" (lists:nth 6 encoded))))
+
+(deftest kernel-info-header
+  (let* ((msg '(#(header '(#(username "alice") #(session "beez")))))
+         (hdr (lupyter-msg:kernel-info-header msg))
+         (data (ljson:decode hdr)))
+    (is-equal #"kernel_info_reply" (element 2 (lists:nth 4 data)))))

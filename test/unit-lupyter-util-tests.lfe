@@ -4,4 +4,8 @@
 
 (include-lib "ltest/include/ltest-macros.lfe")
 
-(defun noop () 'noop)
+(deftest get-kernel-info
+  (is-equal `(#(protocol_version #"5.0")
+              #(language #"lfe")
+              #(language_version #"0.10.0-dev"))
+            (lupyter-util:get-kernel-info)))

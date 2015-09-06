@@ -2,6 +2,7 @@
   (export all))
 
 (include-lib "lupyter/include/lupyter.lfe")
+(include-lib "clj/include/seq.lfe")
 
 (defun check (signature data)
   (check signature "" data))
@@ -43,6 +44,18 @@
           json-parent
           json-metadata
           json-content)))
+
+(defun kernel-info-header (msg)
+  (let ((hdr (ljson:encode `(#(msg_id ,(lutil:uuid4))
+                             #(username ,(get-in msg '(header username)))
+                             #(session ,(get-in msg '(header session)))
+                             #(msg_type #"kernel_info_reply")
+                             #(version ,(lupyter-util:kernel-version))))))
+    (logjam:debug (MODULE)
+                  'kernel-info-header/1
+                  "~nMessage: ~p~nHeader: ~p"
+                  `(,msg ,hdr))
+    hdr))
 
 (defun send ()
   'noop)
