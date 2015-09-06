@@ -1,57 +1,48 @@
 (defmodule lupyter-msg
-  (behaviour gen_server)
-  (export (test-call 1)
-          (test-cast 1))
-  (export (start_link 0)
-          (init 1)
-          (handle_call 3)
-          (handle_cast 2)
-          (handle_info 2)
-          (terminate 2)
-          (code_change 3)))
+  (export all))
 
 (include-lib "lupyter/include/lupyter.lfe")
 
-;;; Callbacks
+(defun check (signature data)
+  (check signature "" data))
 
-(defun server-name () (MODULE))
+(defun check (signature key data)
+  (apply #'check/6 (++ `(,signature ,key) data)))
 
-(defun start_link ()
-  (gen_server:start_link
-     `#(local ,(server-name)) (MODULE) '() '()))
+(defun check (signature header parent metadata content)
+  (check signature "" header parent metadata content))
 
-(defun init (args)
-  `#(ok ,(make-state)))
+(defun check (signature key header parent metadata content)
+  (=:= signature
+     (lupyter-hmac:new key header parent metadata content)))
 
-(defun handle_call
-  ((`#(test ,message) from state)
-    (lfe_io:format "Call: ~p~n" `(,message))
-    `#(reply ok ,state))
-  ((request from state)
-    `#(reply ok ,state)))
+(defun checker ()
+  (lambda (sig data)
+    (check sig data)))
 
-(defun handle_cast
-  ((`#(test ,message) state)
-    (lfe_io:format "Cast: ~p~n" `(,message))
-    `#(noreply ,state))
-  ((message state)
-    `#(noreply ,state)))
+(defun checker (key)
+  (lambda (sig data)
+    (check sig key data)))
 
-(defun handle_info (info state)
-  `#(noreply ,state))
+(defun decode
+  (('(uuid "<IDS|MSG>" baddad42 header parent-header metadata content blob))
+   'noop)
+  ((msg)
+   (log:err (MODULE) 'parse/1 "Bad message format: ~p" `(,msg))
+   #(error 'bad-message-format)))
 
-(defun terminate (reason state)
-  'ok)
+(defun encode (header parent metadata content)
+  (let ((json-header (ljson:encode (list_to_binary header)))
+        (json-parent (ljson:encode (list_to_binary parent)))
+        (json-metadata (ljson:encode (list_to_binary metadata)))
+        (json-content (ljson:encode (list_to_binary content))))
+    (list (lutil:uuid4)
+          (binary "<IDS|MSG>")
+          (lupyter-hmac:new json-header json-parent json-metadata json-content)
+          json-header
+          json-parent
+          json-metadata
+          json-content)))
 
-(defun code_change (old-version state extra)
-  `#(ok ,state))
-
-;;; API
-
-(defun test-call (message)
-  (gen_server:call
-     (server-name) `#(test ,message)))
-
-(defun test-cast (message)
-  (gen_server:cast
-     (server-name) `#(test ,message)))
+(defun send ()
+  'noop)
