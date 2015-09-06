@@ -35,7 +35,7 @@
     (is-equal #"\"metadata\"" (lists:nth 6 encoded))))
 
 (deftest new-header
-  (let* ((hdr (lupyter-msg:new-header #"my message type"  #"session id")))
+  (let* ((data (lupyter-msg:new-header #"my message type"  #"session id")))
     (is-equal #"kernel" (element 2 (lists:nth 3 data)))
     (is-equal #"session id" (element 2 (lists:nth 4 data)))
     (is-equal #"my message type" (element 2 (lists:nth 5 data)))))
@@ -48,6 +48,6 @@
 
 (deftest comm-close-header
   (let* ((msg #"")
-         (data (lupyter-msg:comm-close-header msg))
+         (hdr (lupyter-msg:comm-close-header msg))
          (data (ljson:decode hdr)))
     (is-equal #"comm_close" (element 2 (lists:nth 3 data)))))
