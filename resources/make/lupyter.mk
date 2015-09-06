@@ -27,8 +27,10 @@ $(LUPY_VENV): venv
 
 console:
 	. $(LUPY_VENV)/bin/activate && \
-	ERL_LIBS=$(ERL_LIBS) jupyter-console --kernel=lfe
+	ERL_LIBS=$(ERL_LIBS) jupyter-console \
+	--kernel=lfe --no-confirm-exit --colors=Linux
 
 notebook:
 	. $(LUPY_VENV)/bin/activate && \
-	ERL_LIBS=$(ERL_LIBS) jupyter-notebook --kernel=lfe
+	ERL_LIBS=$(ERL_LIBS) jupyter-notebook \
+	--kernel=lfe --no-confirm-exit --colors=Linux
