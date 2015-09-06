@@ -6,7 +6,7 @@
   (sep "<IDS|MSG>")
   baddad42
   header
-  parent_header
+  parent-header
   metadata
   content
   blob)
