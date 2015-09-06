@@ -45,6 +45,13 @@
           json-metadata
           json-content)))
 
+(defun new-header (msg-type session-id)
+  `(#(date ,(lupyter-util:now))
+    #(msg_id ,(lutil:uuid4))
+    #(username #"kernel")
+    #(session ,session-id)
+    #(msg_type ,msg-type)))
+
 (defun kernel-info-header (msg)
   (let ((hdr (ljson:encode `(#(msg_id ,(lutil:uuid4))
                              #(username ,(get-in msg '(header username)))
@@ -55,6 +62,16 @@
                   'kernel-info-header/1
                   "~nMessage: ~p~nHeader: ~p"
                   `(,msg ,hdr))
+    hdr))
+
+(defun comm-close-header (_msg)
+  (let ((hdr (ljson:encode `(#(msg_id ,(lutil:uuid4))
+                             #(data #"")
+                             #(msg_type #"comm_close")))))
+    (logjam:debug (MODULE)
+                  'comm-close-header/1
+                  "~nMessage: ~p~nHeader: ~p"
+                  `(,_msg ,hdr))
     hdr))
 
 (defun send ()
