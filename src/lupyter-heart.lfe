@@ -3,6 +3,7 @@
   (export (test-call 1)
           (test-cast 1))
   (export (start_link 0)
+          (start_link 1)
           (init 1)
           (handle_call 3)
           (handle_cast 2)
@@ -15,13 +16,25 @@
 ;;; Callbacks
 
 (defun server-name () (MODULE))
+(defun socket-type () 'rep)
+
+(defun start_link (args)
+  (logjam:debug (MODULE) 'start_link/1
+                "Starting ~p get_server with args ~p"
+                `(,(MODULE) ,args))
+  (gen_server:start_link
+   `#(local ,(server-name)) (MODULE) args '()))
 
 (defun start_link ()
-  (gen_server:start_link
-     `#(local ,(server-name)) (MODULE) '() '()))
+  (start_link '()))
 
-(defun init (args)
-  `#(ok ,(make-state)))
+(defun init
+  ((`#(context ,context))
+   (let ((`#(ok ,socket) (erlzmq:socket context (socket-type))))
+     (logjam:debug (MODULE) 'init/1
+                   "Initializing ~p with socket ~p"
+                   `(,(MODULE) ,socket))
+     `#(ok (#(socket ,socket))))))
 
 (defun handle_call
   ((`#(test ,message) from state)

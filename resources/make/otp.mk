@@ -3,7 +3,7 @@ NODENAME=$(shell echo "lupyter"|sed -e 's/-//g')
 dev:
 	@echo "Running OTP app in the foreground ..."
 	@ERL_LIBS=$(ERL_LIBS) PATH=$(SCRIPT_PATH) lfe \
-	-s 'lupyter-app'
+	-s 'lupyter'
 
 run: dev
 
@@ -11,7 +11,7 @@ dev-named:
 	@echo "Running OTP app in the foreground ..."
 	@ERL_LIBS=$(ERL_LIBS) PATH=$(SCRIPT_PATH) lfe \
 	-sname repl@${HOST} -setcookie `cat ~/.erlang.cookie` \
-	-s 'lupyter-app'
+	-s 'lupyter'
 
 run-named: dev-named
 
@@ -19,7 +19,7 @@ prod:
 	@echo "Running OTP app in the background ..."
 	@ERL_LIBS=$(ERL_LIBS) PATH=$(SCRIPT_PATH) lfe \
 	-sname ${NODENAME}@${HOST} -setcookie `cat ~/.erlang.cookie` \
-	-s 'lupyter-app' -noshell -detached
+	-s 'lupyter' -noshell -detached
 
 daemon: prod
 
