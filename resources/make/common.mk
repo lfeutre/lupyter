@@ -53,7 +53,9 @@ clean-ebin:
 clean-eunit:
 	-@PATH=$(SCRIPT_PATH) $(LFETOOL) tests clean
 
-compile: setup get-deps clean-ebin 
+all: setup compile
+
+compile: get-deps clean-ebin
 	@echo "Compiling project code and dependencies ..."
 	@which rebar.cmd >/dev/null 2>&1 && \
 	PATH=$(SCRIPT_PATH) ERL_LIBS=$(ERL_LIBS) rebar.cmd compile || \

@@ -5,4 +5,4 @@ include resources/make/otp.mk
 include resources/make/lupyter.mk
 include resources/make/debug.mk
 
-.DEFAULT_GOAL := compile
+.DEFAULT_GOAL := all
