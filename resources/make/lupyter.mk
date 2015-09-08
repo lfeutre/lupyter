@@ -6,7 +6,7 @@ LUPY_FULL = $(LUPY_DIR)/$(LUPY)
 LUPY_JSON = $(LUPY_DIR)/kernel.json
 LUPY_VENV = ./.venv-lupy
 
-setup: $(LUPY_DIR) $(LUPY_FULL) $(LFETOOL) $(REBAR) $(LUPY_VENV)
+setup: lupy $(LFETOOL) $(REBAR) $(LUPY_VENV)
 
 $(LUPY_DIR):
 	mkdir -p $(LUPY_DIR)
@@ -37,3 +37,9 @@ notebook:
 	. $(LUPY_VENV)/bin/activate && \
 	ERL_LIBS=$(ERL_LIBS) jupyter-notebook \
 	--kernel=lfe --no-confirm-exit --colors=Linux
+
+clean-lupy:
+	rm $(LUPY_FULL)
+	rm $(LUPY_JSON)
+
+lupy: $(LUPY_DIR) $(LUPY_FULL) $(LUPY_JSON)
