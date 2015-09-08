@@ -1,5 +1,6 @@
 {
- "argv": ["HOME/.ipython/kernels/lfe/ipython-lfe", "{connection_file}"],
+ "argv": ["HOME/.ipython/kernels/lfe/ipython-lfe",
+          "--conn-info={connection_file}"],
  "display_name": "LFE",
  "language": "lfe"
 }

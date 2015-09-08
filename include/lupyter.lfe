@@ -1,5 +1,7 @@
 (defrecord state
-  (data #()))
+  cfg
+  context
+  socket)
 
 (defrecord msg
   uuid

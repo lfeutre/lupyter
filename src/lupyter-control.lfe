@@ -13,51 +13,46 @@
 
 (include-lib "lupyter/include/lupyter.lfe")
 
-;;; Callbacks
+;;; Config
 
 (defun server-name () (MODULE))
 (defun socket-type () 'router)
 
-(defun start_link (args)
-  (logjam:debug (MODULE) 'start_link/1
-                "Starting ~p get_server with args ~p"
-                `(,(MODULE) ,args))
-  (gen_server:start_link
-   `#(local ,(server-name)) (MODULE) args '()))
-
-(defun start_link ()
-  (start_link '()))
-
-(defun init
-  ((`#(context ,context))
-   (let ((`#(ok ,socket) (erlzmq:socket context (socket-type))))
-     (logjam:debug (MODULE) 'init/1
-                   "Initializing ~p with socket ~p"
-                   `(,(MODULE) ,socket))
-     `#(ok (#(socket ,socket))))))
+;;; API dispatch callbacks
 
 (defun handle_call
-  ((`#(test ,message) from (= `(#(socket ,socket)) state))
+  ((`#(test ,message) from (= (match-state socket skt) state))
    (logjam:debug (MODULE) 'handle_call/3 "Call: ~p~n" `(,message))
    `#(reply ok ,state))
   ((request from state)
    `#(reply ok ,state)))
 
 (defun handle_cast
-  ((`#(test ,message) (= `(#(socket ,socket)) state))
+  ((`#(test ,message) (= (match-state socket skt) state))
    (logjam:debug (MODULE) 'handle_cast/2 "Cast: ~p~n" `(,message))
    `#(noreply ,state))
   ((message state)
    `#(noreply ,state)))
 
+;;; Callbacks
+
+(defun start_link (args)
+  (lupyter-service:start-link (server-name) (MODULE) args))
+
+(defun start_link ()
+  (lupyter-service:start-link (server-name) (MODULE)))
+
+(defun init (args)
+  (lupyter-service:init (MODULE) (socket-type) args))
+
 (defun handle_info (info state)
-  `#(noreply ,state))
+  (lupyter-service:handle-info info state))
 
 (defun terminate (reason state)
-  'ok)
+  (lupyter-service:terminate reason state))
 
 (defun code_change (old-version state extra)
-  `#(ok ,state))
+  (lupyter-service:code-change old-version state extra))
 
 ;;; API
 

@@ -29,3 +29,9 @@
 
 (defun format-time (timestamp)
   (iso8601:format timestamp))
+
+(defun get-arg-value (key args)
+  (case (lists:keyfind "--conn-info" 1 args)
+    (`#("--conn-info" ,val)
+     `#(ok ,val))
+    (_ #(error key-not-found))))

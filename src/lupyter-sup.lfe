@@ -16,24 +16,22 @@
 (defun start_link ()
   (start_link '()))
 
-(defun init (args)
-  (let ((children `(,(make-child 'lupyter-bcast args)
-                    ,(make-child 'lupyter-control args)
-                    ,(make-child 'lupyter-heart args)
-                    ,(make-child 'lupyter-shell args)
-                    ,(make-child 'lupyter-stdin args)))
+(defun init (state)
+  (let ((children `(,(make-child 'lupyter-bcast state)
+                    ,(make-child 'lupyter-control state)
+                    ,(make-child 'lupyter-heart state)
+                    ,(make-child 'lupyter-shell state)
+                    ,(make-child 'lupyter-stdin state)))
         (restart-strategy #(one_for_one 3 1)))
     `#(ok #(,restart-strategy ,children))))
 
 (defun make-child (name)
   (make-child name '()))
 
-(defun make-child (name args)
-  (logjam:debug (MODULE) 'make-child/2
-                "Creating child ~p with args ~p ..."
-                `(,name ,args))
+(defun make-child (name state)
+  (logjam:debug (MODULE) 'make-child/2 "Creating child ~p ..." `(,name))
   `#(,name
-     #(,name start_link ,args)
+     #(,name start_link (,state))
      permanent
      2000
      worker

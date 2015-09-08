@@ -15,7 +15,7 @@ $(LUPY_FULL):
 	cp bin/$(LUPY) $(LUPY_FULL)
 
 $(LUPY_JSON):
-	sed 's|HOME|'${HOME}'|' resources/kernel.json > $(LUPY_JSON)
+	sed 's|HOME|'$(HOME)'|' resources/kernel.json > $(LUPY_JSON)
 
 venv:
 	-sudo pip install virtualenv
@@ -24,6 +24,9 @@ $(LUPY_VENV): venv
 	virtualenv $(LUPY_VENV)
 	. $(LUPY_VENV)/bin/activate && \
 	pip install jupyter
+
+check-opts: compile-no-deps
+	./bin/ipython-lfe --conn-info="example/connection_file.json"
 
 console:
 	. $(LUPY_VENV)/bin/activate && \

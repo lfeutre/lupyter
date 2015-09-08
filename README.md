@@ -40,6 +40,11 @@ $ make
 
 ## Usage
 
+First, you'll need up update your ``PATH`` to use the local copy of ``lfe``:
+
+```
+$ export PATH=./deps/lfe/bin:$PATH
+```
 
 For terminal use:
 
