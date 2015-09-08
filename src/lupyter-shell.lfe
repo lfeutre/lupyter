@@ -35,6 +35,13 @@
   ((message state)
     `#(noreply ,state)))
 
+(defun handle_info
+  (((= `#(zmq ,_ ,_ ,_) info) (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got handle info request ...")
+   `#(noreply ,state))
+  ((info state)
+   (lupyter-service:handle-info (MODULE) info state)))
+
 ;;; Callbacks
 
 (defun start_link (args)
@@ -45,9 +52,6 @@
 
 (defun init (args)
   (lupyter-service:init (MODULE) (socket-type) (port-name) args))
-
-(defun handle_info (info state)
-  (lupyter-service:handle-info info state))
 
 (defun terminate (reason state)
   (lupyter-service:terminate (MODULE) reason state))

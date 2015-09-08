@@ -86,9 +86,16 @@
 
 (defun send
   ((skt `(,message))
-   (case (erlzmq:send skt message '())
+   (case (finish skt message)
      ('ok 'ok)))
   ((skt `(,message . ,messages))
-   (case (erlzmq:send skt message '(sndmore))
-     ('ok 'ok))
-   (send skt messages)))
+    (send-pice skt message))
+    (send skt messages)))
+
+(defun send-piece (skt message)
+  (case (erlzmq:send skt message '(sndmore))
+    ('ok 'ok)))
+
+(defun finish (skt message)
+  (case (erlzmq:send skt message '()))
+    ('ok 'ok))
