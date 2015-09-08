@@ -24,7 +24,8 @@
   ((`#(test ,message) from (= (match-state socket skt) state))
    (logjam:debug (MODULE) 'handle_call/3 "Call: ~p~n" `(,message))
    `#(reply ok ,state))
-  ((request from state)
+  ((message from state)
+   (logjam:warn (MODULE) 'handle_call/3 "Unmatched message: ~p" `(,message))
    `#(reply ok ,state)))
 
 (defun handle_cast
@@ -32,7 +33,14 @@
    (logjam:debug (MODULE) 'handle_cast/2 "Cast: ~p~n" `(,message))
    `#(noreply ,state))
   ((message state)
+   (logjam:warn (MODULE) 'handle_case/2 "Unmatched message: ~p" `(,message))
    `#(noreply ,state)))
+
+(defun handle_info
+  (((= `#(zmq ,_ ,_ ,_) info) state)
+   (logjam:debug (MODULE) 'handle_info/2 "XXX: Implement this ..."))
+  ((info state)
+   (lupyter-service:handle-info (MODULE) info state)))
 
 ;;; Callbacks
 
@@ -44,9 +52,6 @@
 
 (defun init (args)
   (lupyter-service:init (MODULE) (socket-type) args))
-
-(defun handle_info (info state)
-  (lupyter-service:handle-info info state))
 
 (defun terminate (reason state)
   (lupyter-service:terminate reason state))

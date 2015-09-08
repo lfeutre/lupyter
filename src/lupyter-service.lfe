@@ -25,7 +25,8 @@
                    `(,mod ,skt))
      `#(ok ,(set-state-socket state skt)))))
 
-(defun handle-info (info state)
+(defun handle-info (mod info state)
+  (logjam:warn mod 'handle_info/2 "Got unexpected message: ~p" `(,info))
   `#(noreply ,state))
 
 (defun terminate (reason state)
