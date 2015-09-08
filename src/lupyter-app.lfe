@@ -18,9 +18,8 @@
   (logjam:debug (MODULE) 'start/2 "Creating 0MQ context ...")
   (let* ((`#(ok ,context) (erlzmq:context))
          (state (set-state (args->rec args) context context)))
-    (logjam:debug (MODULE) 'start/2
-                  "Starting lupyter application with args ~p ..."
-                  `(,args))
+    (logjam:info (MODULE) 'start/2  "Starting lupyter application ...")
+    (logjam:debug (MODULE) 'start/2 "Args ~p ..." `(,args))
     (let ((result (lupyter-sup:start_link state)))
       (case result
         (`#(ok ,pid)
@@ -28,11 +27,12 @@
         (x x)))))
 
 (defun stop (state)
+  (logjam:info (MODULE) 'stop/1  "Stopping lupyter application ...")
   'ok)
 
 (defun args->rec (args)
   (case (lupyter-util:get-arg-value "--conn-info" args)
     (`#(ok ,filename)
      (make-state
-      cfg (ljson:read filename)))
+       config (ljson:read filename)))
     (error error)))

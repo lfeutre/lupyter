@@ -1,5 +1,5 @@
 (defrecord state
-  cfg
+  config
   context
   socket)
 

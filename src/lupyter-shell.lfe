@@ -17,6 +17,7 @@
 
 (defun server-name () (MODULE))
 (defun socket-type () 'router)
+(defun port-name () #"shell_port")
 
 ;;; API dispatch callbacks
 
@@ -43,13 +44,13 @@
   (lupyter-service:start-link (server-name) (MODULE)))
 
 (defun init (args)
-  (lupyter-service:init (MODULE) (socket-type) args))
+  (lupyter-service:init (MODULE) (socket-type) (port-name) args))
 
 (defun handle_info (info state)
   (lupyter-service:handle-info info state))
 
 (defun terminate (reason state)
-  (lupyter-service:terminate reason state))
+  (lupyter-service:terminate (MODULE) reason state))
 
 (defun code_change (old-version state extra)
   (lupyter-service:code-change old-version state extra))

@@ -32,6 +32,9 @@
    (log:err (MODULE) 'parse/1 "Bad message format: ~p" `(,msg))
    #(error 'bad-message-format)))
 
+(defun encode (message)
+  'noop)
+
 (defun encode (header parent metadata content)
   (let ((json-header (ljson:encode (list_to_binary header)))
         (json-parent (ljson:encode (list_to_binary parent)))
@@ -74,5 +77,18 @@
                   `(,_msg ,hdr))
     hdr))
 
-(defun send ()
-  'noop)
+(defun send (skt message message-type content)
+  (send skt (encode (++ message
+                        `(#(header #(#"XXX - add me")
+                                   #(msg_type ,message-type))
+                          #(parent_header #(#"XXX - add me"))
+                          #(content ,content))))))
+
+(defun send
+  ((skt `(,message))
+   (case (erlzmq:send skt message '())
+     ('ok 'ok)))
+  ((skt `(,message . ,messages))
+   (case (erlzmq:send skt message '(sndmore))
+     ('ok 'ok))
+   (send skt messages)))

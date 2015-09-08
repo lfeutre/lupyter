@@ -17,22 +17,32 @@
 
 (defun server-name () (MODULE))
 (defun socket-type () 'router)
+(defun port-name () #"stdin_port")
 
 ;;; API dispatch callbacks
 
 (defun handle_call
-  ((`#(test ,message) from state)
-    (lfe_io:format "Call: ~p~n" `(,message))
-    `#(reply ok ,state))
-  ((request from state)
-    `#(reply ok ,state)))
+  ((`#(test ,message) from (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_call/3 "Call: ~p~n" `(,message))
+   `#(reply ok ,state))
+  ((message from state)
+   (logjam:warn (MODULE) 'handle_call/3 "Unmatched message: ~p" `(,message))
+   `#(reply ok ,state)))
 
 (defun handle_cast
-  ((`#(test ,message) state)
-    (lfe_io:format "Cast: ~p~n" `(,message))
-    `#(noreply ,state))
+  ((`#(test ,message) (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_cast/2 "Cast: ~p~n" `(,message))
+   `#(noreply ,state))
   ((message state)
-    `#(noreply ,state)))
+   (logjam:warn (MODULE) 'handle_cast/2 "Unmatched message: ~p" `(,message))
+   `#(noreply ,state)))
+
+(defun handle_info
+  (((= `#(zmq ,_ ,data ()) info) (= (match-state socket skt) state))
+   (logjam:info (MODULE) 'handle_info/2 "Received stdin message.")
+   `#(noreply ,state))
+  ((info state)
+   (lupyter-service:handle-info (MODULE) info state)))
 
 ;;; Callbacks
 
@@ -43,13 +53,10 @@
   (lupyter-service:start-link (server-name) (MODULE)))
 
 (defun init (args)
-  (lupyter-service:init (MODULE) (socket-type) args))
-
-(defun handle_info (info state)
-  (lupyter-service:handle-info info state))
+  (lupyter-service:init (MODULE) (socket-type) (port-name) args))
 
 (defun terminate (reason state)
-  (lupyter-service:terminate reason state))
+  (lupyter-service:terminate (MODULE) reason state))
 
 (defun code_change (old-version state extra)
   (lupyter-service:code-change old-version state extra))

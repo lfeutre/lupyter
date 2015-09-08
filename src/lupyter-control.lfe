@@ -17,6 +17,7 @@
 
 (defun server-name () (MODULE))
 (defun socket-type () 'router)
+(defun port-name () #"control_port")
 
 ;;; API dispatch callbacks
 
@@ -33,7 +34,7 @@
    (logjam:debug (MODULE) 'handle_cast/2 "Cast: ~p~n" `(,message))
    `#(noreply ,state))
   ((message state)
-   (logjam:warn (MODULE) 'handle_case/2 "Unmatched message: ~p" `(,message))
+   (logjam:warn (MODULE) 'handle_cast/2 "Unmatched message: ~p" `(,message))
    `#(noreply ,state)))
 
 (defun handle_info
@@ -51,10 +52,10 @@
   (lupyter-service:start-link (server-name) (MODULE)))
 
 (defun init (args)
-  (lupyter-service:init (MODULE) (socket-type) args))
+  (lupyter-service:init (MODULE) (socket-type) (port-name) args))
 
 (defun terminate (reason state)
-  (lupyter-service:terminate reason state))
+  (lupyter-service:terminate (MODULE) reason state))
 
 (defun code_change (old-version state extra)
   (lupyter-service:code-change old-version state extra))
