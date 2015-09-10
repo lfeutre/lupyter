@@ -31,7 +31,8 @@ check-opts: compile-no-deps
 console:
 	. $(LUPY_VENV)/bin/activate && \
 	ERL_LIBS=$(ERL_LIBS) jupyter-console \
-	--kernel=lfe --no-confirm-exit --colors=Linux
+	--kernel=lfe --no-confirm-exit \
+	--colors=Linux --Session.debug=True --Application.log_level=DEBUG
 
 notebook:
 	. $(LUPY_VENV)/bin/activate && \

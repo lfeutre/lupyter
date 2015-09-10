@@ -3,7 +3,7 @@ NODENAME=$(shell echo "lupyter"|sed -e 's/-//g')
 dev:
 	@echo "Running OTP app in the foreground ..."
 	@ERL_LIBS=$(ERL_LIBS) PATH=$(SCRIPT_PATH) lfe \
-	-s 'lupyter'
+	-s 'lupyter' -conn-info "example/connection_file.json"
 
 run: dev
 
