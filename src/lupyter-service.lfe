@@ -18,15 +18,12 @@
 
 (defun init
   ((mod socket-type port-name (= (match-state context ctx config cfg) state))
-   (let* ((`#(ok ,skt) (erlzmq:socket ctx socket-type))
-          (transport (ljson:get '(#"transport") cfg))
-          (ip (ljson:get '(#"ip") cfg))
-          (port (integer_to_binary (ljson:get `(,port-name) cfg)))
-          (url (binary (transport binary) "://" (ip binary) ":" (port binary))))
-     (logjam:debug mod 'init/1
+   (let ((`#(ok ,skt) (get-socket ctx socket-type (self)))
+         (url (lupyter-util:make-zmq-url port-name cfg)))
+     (logjam:info mod 'init/1
                    "Initializing ~p with socket ~p ..."
                    `(,mod ,skt))
-     (logjam:debug mod 'init/1 "Binding to ~p ..." `(,url))
+     (logjam:info mod 'init/1 "Binding to ~p ..." `(,url))
      (case (erlzmq:bind skt url)
        ('ok 'ok))
      `#(ok ,(set-state-socket state skt)))))
@@ -42,3 +39,9 @@
 
 (defun code-change (old-version state extra)
   `#(ok ,state))
+
+(defun get-socket
+  ;; ((ctx type pid) (when (andalso (=/= type 'pub) (=/= type 'push) (=/= type 'xpub)))
+  ;;  (erlzmq:socket ctx `(,type #(active_pid ,pid))))
+  ((ctx type _pid)
+   (erlzmq:socket ctx type)))
