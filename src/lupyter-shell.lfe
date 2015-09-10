@@ -1,15 +1,9 @@
+;;;; This module does not provide an API, but rather receives messages and
+;;;; dispatches responses back to the remote callers.
+
 (defmodule lupyter-shell
   (behaviour gen_server)
-  (export (test-call 1)
-          (test-cast 1))
-  (export (start_link 0)
-          (start_link 1)
-          (init 1)
-          (handle_call 3)
-          (handle_cast 2)
-          (handle_info 2)
-          (terminate 2)
-          (code_change 3)))
+  (export all))
 
 (include-lib "lupyter/include/lupyter.lfe")
 
@@ -19,25 +13,37 @@
 (defun socket-type () 'router)
 (defun port-name () #"shell_port")
 
-;;; API dispatch callbacks
-
-(defun handle_call
-  ((`#(test ,message) from state)
-    (lfe_io:format "Call: ~p~n" `(,message))
-    `#(reply ok ,state))
-  ((request from state)
-    `#(reply ok ,state)))
-
-(defun handle_cast
-  ((`#(test ,message) state)
-    (lfe_io:format "Cast: ~p~n" `(,message))
-    `#(noreply ,state))
-  ((message state)
-    `#(noreply ,state)))
+;;; Callbacks
 
 (defun handle_info
-  (((= `#(zmq ,_ ,_ ,_) info) (= (match-state socket skt) state))
-   (logjam:debug (MODULE) 'handle_info/2 "Got handle info request ...")
+  (((= `#(zmq ,_ "kernel_info_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:info (MODULE) 'handle_info/2 "Got kernel_info_request ...")
+   (logjam:info "info: ~p" `(,info))
+   `#(noreply ,state))
+  (((= `#(zmq ,_ "execute_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got execute_request ...")
+   `#(noreply ,state))
+  (((= `#(zmq ,_ "complete_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got complete_request ...")
+   `#(noreply ,state))
+  (((= `#(zmq ,_ "is_complete_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got is_complete_request ...")
+   `#(noreply ,state))
+  (((= `#(zmq ,_ "history_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got history_request ...")
+   `#(noreply ,state))
+  (((= `#(zmq ,_ "kernel_info_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got kernel_info_request ...")
+   `#(noreply ,state))
+  (((= `#(zmq ,_ "kernel_info_request" ,flags) info)
+    (= (match-state socket skt) state))
+   (logjam:debug (MODULE) 'handle_info/2 "Got kernel_info_request ...")
    `#(noreply ,state))
   ((info state)
    (lupyter-service:handle-info (MODULE) info state)))
@@ -59,12 +65,36 @@
 (defun code_change (old-version state extra)
   (lupyter-service:code-change old-version state extra))
 
-;;; API
+;;; Receive functions
 
-(defun test-call (message)
-  (gen_server:call
-     (server-name) `#(test ,message)))
+(defun recv-kernel-info-req ()
+  )
 
-(defun test-cast (message)
-  (gen_server:cast
-     (server-name) `#(test ,message)))
+(defun recv-execute-req ()
+  )
+
+(defun recv-complete-req ()
+  )
+
+(defun recv-is-complete-req ()
+  )
+
+(defun recv-history-req ()
+  )
+
+;;; Reply functions
+
+(defun send-kernel-info-reply ()
+  )
+
+(defun send-execute-reply ()
+  )
+
+(defun send-complete-reply ()
+  )
+
+(defun send-is-complete-reply ()
+  )
+
+(defun history-reply ()
+  )
