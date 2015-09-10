@@ -78,6 +78,7 @@
     hdr))
 
 (defun send (skt message message-type content)
+  (logjam:debug "Before send, got msg: ~p" `(,message))
   (send skt (encode (++ message
                         `(#(header #(#"XXX - add me")
                                    #(msg_type ,message-type))
@@ -89,7 +90,7 @@
    (case (finish skt message)
      ('ok 'ok)))
   ((skt `(,message . ,messages))
-    (send-pice skt message))
+    (send-piece skt message)
     (send skt messages)))
 
 (defun send-piece (skt message)
@@ -97,5 +98,5 @@
     ('ok 'ok)))
 
 (defun finish (skt message)
-  (case (erlzmq:send skt message '()))
-    ('ok 'ok))
+  (case (erlzmq:send skt message '())
+    ('ok 'ok)))
