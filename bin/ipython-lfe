@@ -1,0 +1,4 @@
+#!/usr/bin/env lfe
+
+(lupyter-script:main-nonotp
+  (lupyter-util:args->plist script-args))
